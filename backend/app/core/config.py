@@ -42,7 +42,7 @@ class Settings(BaseSettings):
     STORAGE_MODE: str = "local"
     LOCAL_STORAGE_PATH: str = "./uploads"
     
-    # Security Brute Force Settings
+    # Security Rate Limiting / Brute-force Protection
     MAX_PIN_ATTEMPTS: int = 5
     PIN_LOCKOUT_MINUTES: int = 15
 
@@ -51,5 +51,14 @@ class Settings(BaseSettings):
         env_file_encoding="utf-8",
         extra="ignore"
     )
+
+    def get_async_database_url(self) -> str:
+        """Converts standard postgresql:// or postgres:// URLs to postgresql+asyncpg:// format."""
+        url = self.DATABASE_URL
+        if url.startswith("postgres://"):
+            url = url.replace("postgres://", "postgresql+asyncpg://", 1)
+        elif url.startswith("postgresql://") and not url.startswith("postgresql+asyncpg://"):
+            url = url.replace("postgresql://", "postgresql+asyncpg://", 1)
+        return url
 
 settings = Settings()

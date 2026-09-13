@@ -5,7 +5,7 @@ from app.core.config import settings
 
 # Async SQLAlchemy Engine
 engine = create_async_engine(
-    settings.DATABASE_URL,
+    settings.get_async_database_url(),
     echo=False,
     future=True,
     pool_pre_ping=True,
@@ -26,7 +26,7 @@ class Base(DeclarativeBase):
     pass
 
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
-    """FastAPI dependency for yielding async SQLAlchemy sessions with auto-rollback on error."""
+    """FastAPI dependency yielding async SQLAlchemy sessions with auto-rollback on error."""
     async with AsyncSessionLocal() as session:
         try:
             yield session

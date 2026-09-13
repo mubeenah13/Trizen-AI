@@ -1,0 +1,28 @@
+services:
+  # Backend FastAPI Web Service
+  - type: web
+    name: trizen-backend
+    env: python
+    buildCommand: cd backend && pip install -r requirements.txt
+    startCommand: cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET_KEY
+        generateValue: true
+      - key: GALLERY_JWT_SECRET_KEY
+        generateValue: true
+      - key: S3_ENDPOINT_URL
+        sync: false
+      - key: S3_ACCESS_KEY
+        sync: false
+      - key: S3_SECRET_KEY
+        sync: false
+      - key: S3_BUCKET_NAME
+        sync: false
+      - key: STORAGE_MODE
+        value: s3
+      - key: FRONTEND_URL
+        sync: false

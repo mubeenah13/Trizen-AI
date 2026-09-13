@@ -15,14 +15,19 @@ app = FastAPI(
     redoc_url=f"{settings.API_V1_STR}/redoc",
 )
 
-# CORS Configuration
-origins = [
-    settings.FRONTEND_URL,
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    "http://localhost:3000",
-    "*"
-]
+# Production CORS Configuration
+if settings.ENVIRONMENT == "production":
+    origins = [
+        settings.FRONTEND_URL.rstrip("/"),
+    ]
+else:
+    origins = [
+        settings.FRONTEND_URL.rstrip("/"),
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:3000",
+        "http://localhost:8000"
+    ]
 
 app.add_middleware(
     CORSMiddleware,
@@ -46,7 +51,7 @@ app.include_router(api_router, prefix=settings.API_V1_STR)
 
 @app.on_event("startup")
 async def on_startup():
-    """Create database tables if they do not exist (useful for test/sqlite fallback)."""
+    """Create database tables if they do not exist."""
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
 
