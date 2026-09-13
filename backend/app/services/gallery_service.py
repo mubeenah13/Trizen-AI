@@ -273,7 +273,8 @@ class GalleryService:
     async def get_public_gallery_photos(
         db: AsyncSession,
         slug: str,
-        token_payload: dict
+        token_payload: dict,
+        raw_token: str = ""
     ) -> List[PublicPhotoResponse]:
         stmt = (
             select(Gallery)
@@ -300,7 +301,7 @@ class GalleryService:
         for gp in gallery.gallery_photos:
             p = gp.photo
             if p:
-                photo_url = f"/api/v1/public/photos/stream/{p.id}?token={token_payload.get('gallery_id')}"
+                photo_url = f"/api/v1/public/galleries/stream/{p.id}?token={raw_token}"
                 photos.append(
                     PublicPhotoResponse(
                         id=p.id,

@@ -41,14 +41,17 @@ async def verify_gallery_pin(
 async def get_public_gallery_photos(
     slug: str,
     db: AsyncSession = Depends(get_db),
-    token_payload: dict = Depends(get_gallery_token_payload)
+    token_payload: dict = Depends(get_gallery_token_payload),
+    x_gallery_token: Optional[str] = Header(None, alias="X-Gallery-Token"),
+    token: Optional[str] = Query(None)
 ):
     """
     Public Endpoint: Get published photos after valid PIN verification.
     Requires X-Gallery-Token header. Returns ONLY photos in gallery_photos.
     Unpublished photos or arbitrary event photos are strictly blocked.
     """
-    return await GalleryService.get_public_gallery_photos(db, slug, token_payload)
+    raw_token = x_gallery_token or token or ""
+    return await GalleryService.get_public_gallery_photos(db, slug, token_payload, raw_token=raw_token)
 
 @router.get("/stream/{photo_id}")
 async def stream_public_gallery_photo(
